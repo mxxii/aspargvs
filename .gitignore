@@ -1,0 +1,5 @@
+/lib
+/node_modules
+**/grammar.js
+**/grammar.ts
+**/__*
