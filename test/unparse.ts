@@ -15,6 +15,8 @@ test('simple array', snapshotMacro, { xs: [0, 1] });
 
 test('array with object', snapshotMacro, { xs: [0, 1, {a: 2}] });
 
+test('array with objects containing multiple keys', snapshotMacro, { xs: [ {a: 0, b: 1}, {a: 2, b: 3} ] });
+
 test('array with object and more primitive values', snapshotMacro, { xs: [0, 1, {a: 2}, 3, 4] });
 
 test('booleans', snapshotMacro, {

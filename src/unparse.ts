@@ -69,7 +69,7 @@ function unparseArray (json: JsonArray): UnparseArg | UnparseArgs {
       if (u.type === 'one') {
         args.push(nest(u, i));
       } else {
-        args.push(...u.args.map(nest));
+        args.push(...u.args.map((a) => nest(a, i)));
       }
     }
   }
