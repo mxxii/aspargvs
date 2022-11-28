@@ -7,7 +7,7 @@
 
 Parse argv as a json object.
 
-Rather opinionated solution for when you need a CLI wrapper for a library package that accepts complex options object and you don't want to manually define and maintain CLI arguments for all of that.
+Rather opinionated solution for when you need a CLI wrapper for a library package that accepts complex options object and you don't want to manually define and maintain CLI arguments mapping for all of that.
 
 ----
 
@@ -28,6 +28,11 @@ Rather opinionated solution for when you need a CLI wrapper for a library packag
 - full JSON in arg values (what's the point? go full json then. putting keys inside values doesn't seem idiomatic for console args and it can be error-prone - would require too much attention to proper escaping - can't just copy and paste json from elsewhere)
 
 - explicit defaults (This intended to be a thin wrapper around a package with it's own defaults. Extra layer of defaults might be confusing. If you absolutely need it - you can merge the produced json with your default object in client code. There are also preset and file reading features for cases when multiple meaningful behaviors can be provided.)
+
+
+## Changelog
+
+Available here: [CHANGELOG.md](https://github.com/mxxii/aspargvs/blob/main/CHANGELOG.md)
 
 
 ## Install
@@ -183,13 +188,23 @@ But such bare double quotes can't help to escape something that can be taken as 
 
 #### PowerShell
 
-PowerShell has a special meaning for all possible quotes and tricky escape rules. I find the simplest way is to use a pair of backtick characters (` `` `) to pass a single backtick.
+PowerShell has special meaning for too many characters and also nontrivial escape rules.
 
-Backtick + single quote (`` `' ``) would also work to pass a single quote, but is just not as easy to type.
+- All possible quotes are intercepted by PowerShell.
+
+    I find the simplest way is to use a pair of backtick characters (` `` `) to pass a single backtick.
+
+    Escaped string would look like this: ``` ``true`` ```
+
+    Backtick + single quote (`` `' ``) would also work to pass a single quote, but it is just not as easy to type.
+
+- PowerShell has a special meaning for curly braces.
+
+    Escape with backtick when defining an empty object: `` `{`} ``
 
 #### Others
 
-_I'm not using daily and can't provide any specific advice. Feel free to share your experience and findings by opening an issue._
+_I'm not using anything else daily and can't provide any specific advice. Feel free to share your experience and findings by opening an issue._
 
 
 ## Roadmap
@@ -197,7 +212,7 @@ _I'm not using daily and can't provide any specific advice. Feel free to share y
 Some things left for future updates:
 
 - Explore the possibility to support for output object type/schema - to return object of that type and generate detailed help;
-- `unparse` command - provide escaped strings ready to use in different shells;
+- `unparse` command - provide escaped strings ready for use in different shells;
 - `unparse` command - avoid string quotes when not needed;
 - Recursive subkeys with `::`, `:::`, etc prefixes;
 - Explore the possibility to escape syntax inside values with `\` to reduce the need for quoted strings;
