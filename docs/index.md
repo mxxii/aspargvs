@@ -1,4 +1,4 @@
-# aspargvs - v0.5.1
+# aspargvs - v0.5.2
 
 ## Table of contents
 
