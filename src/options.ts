@@ -35,17 +35,20 @@ export type Options = {
      */
     unparse?: true | ( (args: string[])   => (string | void) ),
     /**
-     * Set to `true` to enable built-in inspect command -
+     * Provide [InspectOptions](https://nodejs.org/api/util.html#utilinspectobject-options) object
+     * to enable built-in inspect command.
      * `aspargvs` will log to console the output of
-     * `util.inspect` applied to the parsed JSON object.
+     * `util.inspect` applied to the parsed JSON object
+     * with the specified options.
+     * `{ depth: 4 }` would be a simple practical example.
      *
-     * Provide a function to customize the command - to provide
+     * Provide a function to customize the command - to use
      * a custom serializer or to send the output elsewhere.
      *
      * If function returns a string then it will be sent to console.
      * Otherwise it is considered handled by client code.
      */
-    inspect?: true | ( (json: JsonObject) => (string | void) ),
+    inspect?: import('node:util').InspectOptions | ( (json: JsonObject) => (string | void) ),
     /**
      * Function to handle the parsed JSON object.
      *

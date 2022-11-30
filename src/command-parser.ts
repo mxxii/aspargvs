@@ -1,5 +1,5 @@
 
-import { existsSync, readFileSync } from 'fs';
+import { existsSync, readFileSync } from 'node:fs';
 import * as p from 'peberminta';
 
 import { JsonObject, JsonValue, isJsonObject } from './json';

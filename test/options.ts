@@ -36,7 +36,7 @@ test(
   ['inspect', '--a-b-c', '---', '--a-b.c-d'],
   { handlers: {
     key: kebabToSnakeCase,
-    inspect: true,
+    inspect: {},
     json: () => { console.log('This code must not be reached in this test.'); }
   } }
 );

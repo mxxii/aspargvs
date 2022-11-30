@@ -1,6 +1,6 @@
 
 import * as p from 'peberminta';
-import { inspect } from 'util';
+import { inspect } from 'node:util';
 
 import { parseAllCommands } from './commands-parser';
 import { getHelp } from './help';
@@ -64,10 +64,9 @@ export function handleArgs (args: string[], options: Options = {}): void {
   }
 
   if (commandResult.value.command === 'inspect' && options.handlers?.inspect) {
-    const handler = options.handlers.inspect;
-    const logString = (typeof handler === 'function')
-      ? handler(json)
-      : inspect(json);
+    const logString = (typeof options.handlers.inspect === 'function')
+      ? options.handlers.inspect(json)
+      : inspect(json, options.handlers.inspect);
     if (logString) { console.log(logString); }
     return;
   }

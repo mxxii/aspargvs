@@ -134,7 +134,7 @@ test(
     help: (help) => help,
     json: () => { console.log('This code must not be reached in this test.'); },
     merge: merge,
-    inspect: true,
+    inspect: {},
     unparse: true
   }, presets: presets }
 );
@@ -255,14 +255,28 @@ test(
   'inspect command - default implementation',
   outputSnapshotMacro,
   ['inspect', '--foo=bar'],
-  { handlers: { inspect: true, json: () => { console.log('This code must not be reached in this test.'); } } }
+  { handlers: { inspect: {}, json: () => { console.log('This code must not be reached in this test.'); } } }
 );
 
 test(
   'inspect command - short alias',
   outputSnapshotMacro,
   ['-i', '--foo=bar'],
-  { handlers: { inspect: true, json: () => { console.log('This code must not be reached in this test.'); } } }
+  { handlers: { inspect: {}, json: () => { console.log('This code must not be reached in this test.'); } } }
+);
+
+test(
+  'inspect command - deeply nested object - no depth specified',
+  outputSnapshotMacro,
+  ['inspect', '--a.b.c.d.e.f.g.h'],
+  { handlers: { inspect: {}, json: () => { console.log('This code must not be reached in this test.'); } } }
+);
+
+test(
+  'inspect command - deeply nested object - depth = 5',
+  outputSnapshotMacro,
+  ['inspect', '--a.b.c.d.e.f.g.h'],
+  { handlers: { inspect: { depth: 5 }, json: () => { console.log('This code must not be reached in this test.'); } } }
 );
 
 test(
@@ -334,7 +348,7 @@ test(
       console.log('Business logic end.');
     },
     help: true,
-    inspect: true,
+    inspect: {},
     unparse: true
   } }
 );
