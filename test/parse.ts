@@ -75,6 +75,8 @@ test('throw when providing subkeys for a primitive value', t => {
 
 // Automatic index
 
-test('subkeys in auto-indexed array', snapshotMacro, ['--foo[_]{}', ':bar=1', '--foo[_]={}', ':bar=2', ':baz=3']);
+test('object subkeys inside auto-indexed array', snapshotMacro, ['--foo[_]{}', ':bar=1', '--foo[_]={}', ':bar=2', ':baz=3']);
+
+test('array subkeys inside auto-indexed array', snapshotMacro, ['--foo[_][]', ':[_]=1', ':[_]=2', '--foo[_][]', ':[_]=3']);
 
 test('nested auto-indexed arrays', snapshotMacro, ['--foo[_][_]=1', '--foo[_][_]=2', '--foo[_][_]=3', '--foo[_][_]=4']);
