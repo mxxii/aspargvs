@@ -4,7 +4,7 @@ import { inspect } from 'util';
 
 import { parseAllCommands } from './commands-parser';
 import { getHelp } from './help';
-import { JsonObject, setJsonObjectItem } from './json';
+import { JsonObject, setJsonObjectItem, setJsonArrayItem } from './json';
 import { argToToken } from './key-token-parser';
 import { parseAllKeys } from './keys-parser';
 import { Options } from './options';
@@ -107,6 +107,27 @@ function parseJsonFromKeys(
   }
   const json = allKeysResult.value.reduce(
     (acc, kv) => {
+      if (kv.type === 'objectKeyValue') {
+        for (const subKey of kv.subs) {
+          setJsonObjectItem(
+            kv.value,
+            subKey.value,
+            options.handlers?.key,
+            subKey.path.key0,
+            ...subKey.path.keys
+          );
+        }
+      } else if (kv.type === 'arrayKeyValue') {
+        for (const subKey of kv.subs) {
+          setJsonArrayItem(
+            kv.value,
+            subKey.value,
+            options.handlers?.key,
+            subKey.path.key0,
+            ...subKey.path.keys
+          );
+        }
+      }
       setJsonObjectItem(
         acc,
         kv.value,
@@ -114,19 +135,6 @@ function parseJsonFromKeys(
         kv.path.key0,
         ...kv.path.keys
       );
-      if (kv.type === 'arrayKeyValue' || kv.type === 'objectKeyValue') {
-        for (const subKey of kv.subs) {
-          setJsonObjectItem(
-            acc,
-            subKey.value,
-            options.handlers?.key,
-            kv.path.key0,
-            ...kv.path.keys,
-            subKey.path.key0,
-            ...subKey.path.keys
-          );
-        }
-      }
       return acc;
     },
     {} as JsonObject

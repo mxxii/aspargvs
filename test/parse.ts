@@ -71,3 +71,10 @@ test('throw when providing subkeys for a primitive value', t => {
     { message: 'Some args can not be parsed: :[2]=z' }
   );
 });
+
+
+// Automatic index
+
+test('subkeys in auto-indexed array', snapshotMacro, ['--foo[_]{}', ':bar=1', '--foo[_]={}', ':bar=2', ':baz=3']);
+
+test('nested auto-indexed arrays', snapshotMacro, ['--foo[_][_]=1', '--foo[_][_]=2', '--foo[_][_]=3', '--foo[_][_]=4']);
