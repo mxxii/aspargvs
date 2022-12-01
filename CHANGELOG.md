@@ -6,6 +6,10 @@
 - change `inspect` handler options to expose `node:util.InspectOptions`;
 - raise Node.js required version to `>= 14.13.1` (uses `node:` prefixes).
 
+## Version 0.5.2
+
+- few corrections for help command output.
+
 ## Version 0.5.1
 
 - fix `unparse` - indexing was broken for arrays of objects;
