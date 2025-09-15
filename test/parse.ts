@@ -1,12 +1,14 @@
 import test from 'ava';
 
-import { handleArgs } from '../src/aspargvs';
+import { handleArgs } from '../src/aspargvs.ts';
+
+export default { require: ['./_force-exit.ts'] };
 
 
 const snapshotMacro = test.macro((t, input: string[]) => {
   handleArgs(
     input,
-    { handlers: { json: (json) => { t.snapshot(json, '`' + input.join(' ') + '`'); } } }
+    { handlers: { json: (json) => { t.snapshot(json, '`' + input.join(' ') + '`'); } } },
   );
 });
 
@@ -26,10 +28,10 @@ test('empty array defined multiple times makes no effect', snapshotMacro, ['--xs
 
 test('combine nested objects', snapshotMacro, ['--a.a.a', '--a.a.b', '--a.b', '--b']);
 
-test('throw when overriding the same key that is not an array', t => {
+test('throw when overriding the same key that is not an array', (t) => {
   t.throws(
     () => { handleArgs(['--a.b=1', '--a.b=b']); },
-    { message: 'Trying to set "b" key multiple times.' }
+    { message: 'Trying to set "b" key multiple times.' },
   );
 });
 
@@ -44,31 +46,31 @@ test('array with subkeys', snapshotMacro, ['--bar=[0,1]', ':[2]=2', ':[3]=[3,4]'
 
 test('bare values with subkeys', snapshotMacro, ['--bar[]', '{}', ':a=2', ':b=[3,4]', '[5]', ':[_]', ':![_]']);
 
-test('throw when using invalid array subkey', t => {
+test('throw when using invalid array subkey', (t) => {
   t.throws(
     () => { handleArgs(['--foo[]', ':[]']); },
-    { message: 'Some args can not be parsed: :[]' }
+    { message: 'Some args can not be parsed: :[]' },
   );
 });
 
-test('throw when providing array subkeys for an object', t => {
+test('throw when providing array subkeys for an object', (t) => {
   t.throws(
     () => { handleArgs(['--foo{}', ':[0]']); },
-    { message: 'Some args can not be parsed: :[0]' }
+    { message: 'Some args can not be parsed: :[0]' },
   );
 });
 
-test('throw when providing object subkeys for an array', t => {
+test('throw when providing object subkeys for an array', (t) => {
   t.throws(
     () => { handleArgs(['--foo[]', ':a']); },
-    { message: 'Some args can not be parsed: :a' }
+    { message: 'Some args can not be parsed: :a' },
   );
 });
 
-test('throw when providing subkeys for a primitive value', t => {
+test('throw when providing subkeys for a primitive value', (t) => {
   t.throws(
     () => { handleArgs(['--foo=bar', ':[2]=z']); },
-    { message: 'Some args can not be parsed: :[2]=z' }
+    { message: 'Some args can not be parsed: :[2]=z' },
   );
 });
 

@@ -1,5 +1,5 @@
 
-export { JsonObject, JsonArray, JsonValue, JsonPrimitive } from './json';
-export { Options } from './options';
-export { handleArgs, handleArgv } from './args-parser';
-export { unparseArgs } from './unparse';
+export type { JsonObject, JsonArray, JsonValue, JsonPrimitive } from './json.ts';
+export type { Options } from './options.ts';
+export { handleArgs, handleArgv } from './args-parser.ts';
+export { unparseArgs } from './unparse.ts';

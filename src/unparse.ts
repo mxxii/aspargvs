@@ -1,9 +1,9 @@
 
-import { JsonArray, JsonObject, JsonValue } from './json';
+import type { JsonArray, JsonObject, JsonValue } from './json.ts';
 
 type Path = (string | number)[];
-type UnparseArg = { type: 'one', path: Path, value: string };
-type UnparseArgs = { type: 'many', args: UnparseArg[] };
+type UnparseArg = { type: 'one'; path: Path; value: string };
+type UnparseArgs = { type: 'many'; args: UnparseArg[] };
 
 function stringifyKey (key: string, unkey?: (key: string) => string): string {
   if (unkey) {
@@ -16,14 +16,14 @@ function stringifyKey (key: string, unkey?: (key: string) => string): string {
 
 function stringifyPath (path: Path, unkey?: (key: string) => string): string {
   return path.map(
-    (fr) => (typeof fr === 'number')
+    fr => (typeof fr === 'number')
       ? `[${fr}]`
-      : `.${stringifyKey(fr, unkey)}`
+      : `.${stringifyKey(fr, unkey)}`,
   ).join('').replace(/^\./, '');
 }
 
 function stringifyArg (unkey?: (key: string) => string): (arg: UnparseArg) => string {
-  return arg => {
+  return (arg) => {
     const path = stringifyPath(arg.path, unkey);
     if (arg.value === 'true') {
       return `--${path}`;
@@ -39,7 +39,7 @@ function newArg (value: string): UnparseArg {
   return {
     type: 'one',
     path: [],
-    value: value
+    value: value,
   };
 }
 
@@ -47,7 +47,7 @@ function nest (u: UnparseArg, key: string | number): UnparseArg {
   return {
     type: 'one',
     path: [key, ...u.path],
-    value: u.value
+    value: u.value,
   };
 }
 
@@ -69,7 +69,7 @@ function unparseArray (json: JsonArray): UnparseArg | UnparseArgs {
       if (u.type === 'one') {
         args.push(nest(u, i));
       } else {
-        args.push(...u.args.map((a) => nest(a, i)));
+        args.push(...u.args.map(a => nest(a, i)));
       }
     }
   }
@@ -86,7 +86,7 @@ function unparseObject (json: JsonObject): UnparseArg | UnparseArgs {
     if (u.type === 'one') {
       args.push(nest(u, key));
     } else {
-      args.push(...u.args.map((a) => nest(a, key)));
+      args.push(...u.args.map(a => nest(a, key)));
     }
   }
   return (args.length === 0) ? newArg('{}')
@@ -97,7 +97,7 @@ function unparseObject (json: JsonObject): UnparseArg | UnparseArgs {
 function unparseString (str: string): UnparseArg {
   return newArg((/[\s={}[,\]"'`]|^[-.\d]|^(?:true|false|null)$/i.test(str))
     ? JSON.stringify(str)
-    : str
+    : str,
   );
 }
 

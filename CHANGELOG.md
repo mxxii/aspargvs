@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.7.0
+
+- Targeting Node 20;
+- ...
+
 ## Version 0.6.0
 
 - fix subkeys inside automatically indexed array item;

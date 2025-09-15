@@ -1,11 +1,19 @@
 {
   "$schema": "https://typedoc.org/schema.json",
   "disableSources": true,
-  "entryDocument": "index.md",
+  "entryFileName": "index.md",
   "entryPoints": ["src/aspargvs.ts"],
   "githubPages": false,
   "hideBreadcrumbs": true,
   "includeVersion": true,
   "readme": "none",
-  "out": "docs"
+  "out": "docs",
+  "plugin": ["typedoc-plugin-markdown"],
+  "router": "module",
+  "useCodeBlocks": true,
+  "expandParameters": true,
+  "parametersFormat": "table",
+  "propertiesFormat": "htmlTable",
+  "indexFormat": "table",
+  "useHTMLEncodedBrackets": true,
 }

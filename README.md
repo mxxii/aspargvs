@@ -131,10 +131,10 @@ Note: short aliases cannot be merged.
 
 | Syntax          | Interpretation | Notes
 | --------------- | -------------- | -----
-| `null`          | `null`         |
-| `true`          | `true`         |
-| `false`         | `false`        |
-| `1.23e+4`       | Number         |
+| `null`          | `null`         | -
+| `true`          | `true`         | -
+| `false`         | `false`        | -
+| `1.23e+4`       | Number         | -
 | `[<value>,...]` | Array          | Spaces are not allowed. If you quote the whole arg then any inner spaces will become part of values
 | `{}`            | Empty object   | Use separate args - full keys or subkeys to build a complex object
 | `"null"`        | String         | Beware - Node.js strips unescaped double quotes

@@ -1,14 +1,14 @@
 
 import * as p from 'peberminta';
 
-import { CommandResult, CommandResultWithData, parseAnyCommand } from './command-parser';
-import { JsonObject } from './json';
-import { Options } from './options';
+import { parseAnyCommand, type CommandResult, type CommandResultWithData } from './command-parser.ts';
+import { type JsonObject } from './json.ts';
+import { type Options } from './options.ts';
 
 
 export function parseAllCommands (
-  data: p.Data<string,Options>,
-  i: number
+  data: p.Data<string, Options>,
+  i: number,
 ): p.Match<CommandResult | CommandResultWithData> {
   let acc: JsonObject = {};
   let position = i;
@@ -49,7 +49,7 @@ export function parseAllCommands (
     value: {
       type: 'commandWithData',
       command: commandId || 'json',
-      json: acc
-    }
+      json: acc,
+    },
   };
 }

@@ -3,7 +3,7 @@ export function ciEquals (a: string, b: string): boolean {
 }
 
 export function ciIncludes (as: string[], b: string): boolean {
-  return as.some((a) => ciEquals(a, b));
+  return as.some(a => ciEquals(a, b));
 }
 
 export function ciGetProperty<T> (obj: Record<string, T>, key: string): T | undefined {

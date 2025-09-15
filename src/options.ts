@@ -1,12 +1,12 @@
 
-import { JsonObject } from './json';
+import { type JsonObject } from './json.ts';
 
 /**
  * Options object.
  */
 export type Options = {
   /** Allow `--key value` syntax (without `=`). */
-  allowSpacedValue?: boolean,
+  allowSpacedValue?: boolean;
   /** Handlers for various actions. */
   handlers?: {
     /**
@@ -20,7 +20,7 @@ export type Options = {
      * If function returns a string then it will be sent to console.
      * Otherwise it is considered handled by client code.
      */
-    help?:    true | ( (help: string)     => (string | void) ),
+    help?: true | ((help: string) => (string | void));
     /**
      * Set to `true` to enable built-in unparse command -
      * `aspargvs` will convert the parsed JSON object
@@ -33,7 +33,7 @@ export type Options = {
      * If function returns a string then it will be sent to console.
      * Otherwise it is considered handled by client code.
      */
-    unparse?: true | ( (args: string[])   => (string | void) ),
+    unparse?: true | ((args: string[]) => (string | void));
     /**
      * Provide [InspectOptions](https://nodejs.org/api/util.html#utilinspectobject-options) object
      * to enable built-in inspect command.
@@ -48,7 +48,7 @@ export type Options = {
      * If function returns a string then it will be sent to console.
      * Otherwise it is considered handled by client code.
      */
-    inspect?: import('node:util').InspectOptions | ( (json: JsonObject) => (string | void) ),
+    inspect?: import('node:util').InspectOptions | ((json: JsonObject) => (string | void));
     /**
      * Function to handle the parsed JSON object.
      *
@@ -58,23 +58,23 @@ export type Options = {
      * If function returns a string then it will be sent to console.
      * Otherwise it is considered handled by client code.
      */
-    json?:           ( (json: JsonObject) => (string | void) ),
+    json?: ((json: JsonObject) => (string | void));
     /**
      * Function to merge JSON objects that come from `preset` and `json` commands.
      *
      * Bring your own deep merger in case you need these commands.
      */
-    merge?: ( (acc: JsonObject, next: JsonObject) => JsonObject ),
+    merge?: ((acc: JsonObject, next: JsonObject) => JsonObject);
     /**
      * Function to convert CLI keys to JSON keys.
      * If you need to convert from kebab-case to camelCase for example.
      */
-    key?:            ( (key: string)      => string ),
+    key?: ((key: string) => string);
     /**
      * Function to convert JSON keys to CLI keys.
      * If you need to convert from camelCase to kebab-case for example.
      */
-    unkey?:          ( (key: string)      => string ),
+    unkey?: ((key: string) => string);
     /**
      * Specify this function to enable the version command.
      *
@@ -83,15 +83,15 @@ export type Options = {
      * If function returns a string then it will be sent to console.
      * Otherwise it is considered handled by client code.
      */
-    version?:        ( ()                 => (string | void) ),
+    version?: (() => (string | void));
     /**
      * Function to return the CLI binary name.
      * Used in the help text.
      *
      * Can query it from package.json for example.
      */
-    bin?:            ( ()                 => string )
-  },
+    bin?: (() => string);
+  };
   /**
    * Presets are pre-filled JSON objects.
    * If supplied, this will enable `preset` command.
@@ -100,8 +100,8 @@ export type Options = {
    */
   presets?: { [id: string]: {
     /** Description shown in the help output. */
-    description: string,
+    description: string;
     /** JSON object. User-supplied arguments are merged with this object. */
-    json: JsonObject
-  } },
+    json: JsonObject;
+  }; };
 };

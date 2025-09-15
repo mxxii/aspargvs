@@ -1,15 +1,15 @@
-import { Options } from './options';
+import { type Options } from './options.ts';
 
 export function getHelp (options: Options): string {
   const binName = (s => s ? s + ' ' : '')(options.handlers?.bin?.());
   let presets: ([string, boolean])[] = [];
   if (options.presets && Object.keys(options.presets).length > 0) {
     const maxKeyLength = Math.max(
-      ...Object.keys(options.presets).map((key) => key.length)
+      ...Object.keys(options.presets).map(key => key.length),
     );
     presets = Object.entries(options.presets).map(
-      ([key,{description}]) =>
-        [`  ${key.padEnd(maxKeyLength)}  : ${description}`, true]
+      ([key, { description }]) =>
+        [`  ${key.padEnd(maxKeyLength)}  : ${description}`, true],
     );
   }
   const lines: ([string, boolean?])[] = [
@@ -26,7 +26,7 @@ export function getHelp (options: Options): string {
     ...((presets.length > 0) ? [
       [''],
       ['Presets are:'],
-      ...presets
+      ...presets,
     ] : []) as ([string, boolean?])[],
     [''],
     ['Key syntax:'],
@@ -57,6 +57,6 @@ export function getHelp (options: Options): string {
   ];
   return lines
     .filter(([,b]) => b !== false)
-    .map(([s,]) => s)
+    .map(([s]) => s)
     .join('\n');
 }

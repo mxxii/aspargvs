@@ -1,20 +1,22 @@
 
-import * as p from 'peberminta';
 import { inspect } from 'node:util';
+import * as p from 'peberminta';
 
-import { parseAllCommands } from './commands-parser';
-import { getHelp } from './help';
-import { JsonObject, setJsonObjectItem, setJsonArrayItem } from './json';
-import { argToToken } from './key-token-parser';
-import { parseAllKeys } from './keys-parser';
-import { Options } from './options';
-import { unparseArgs } from './unparse';
+import { parseAllCommands } from './commands-parser.ts';
+import { getHelp } from './help.ts';
+import { setJsonArrayItem, setJsonObjectItem, type JsonObject } from './json.ts';
+import { argToToken } from './key-token-parser.ts';
+import { parseAllKeys } from './keys-parser.ts';
+import { type Options } from './options.ts';
+import { unparseArgs } from './unparse.ts';
 
 /**
- * Parse arguments into JSON object,
+ * Parse `process.argv` into JSON object,
  * run required actions as defined in options object.
  *
- * This function uses `process.argv` by itself.
+ * This function automatically slices `process.argv` to remove paths to node executable and script file. Only actual arguments are parsed.
+ *
+ * Use {@link handleArgs} instead in case you need to pass custom arguments array.
  *
  * @param options - {@link Options} object.
  */
@@ -23,19 +25,16 @@ export function handleArgv (options: Options = {}): void {
 }
 
 /**
- * Parse arguments into JSON object,
+ * Parse arguments-only array into JSON object,
  * run required actions as defined in options object.
  *
- * This function expects a stripped arguments array.
- *
- * Use {@link handleArgv} instead in case you don't do anything with it.
+ * Use {@link handleArgv} instead in case you don't need any special pre-processing of `process.argv`.
  *
  * @param args - arguments array (for example `process.argv.slice(2)`).
  * @param options - {@link Options} object.
  */
 export function handleArgs (args: string[], options: Options = {}): void {
-  const commandResult =
-    parseAllCommands({ tokens: args, options: options }, 0);
+  const commandResult = parseAllCommands({ tokens: args, options: options }, 0);
 
   if (commandResult.value.command === 'version') {
     const version = options.handlers?.version?.();
@@ -86,14 +85,14 @@ export function handleArgs (args: string[], options: Options = {}): void {
     if (logString) { console.log(logString); }
   } else {
     throw new Error(
-      `What to do with parsed args JSON object? 'json' handler is not specified.`
+      `What to do with parsed args JSON object? 'json' handler is not specified.`,
     );
   }
 }
 
-function parseJsonFromKeys(
+function parseJsonFromKeys (
   args: string[],
-  options: Options
+  options: Options,
 ) {
   const tokens = args.map(argToToken);
   const tokensData = { tokens: tokens, options: options };
@@ -104,7 +103,7 @@ function parseJsonFromKeys(
       .join(' ');
     throw new Error(`Some args can not be parsed: ${remainingArgs}`);
   }
-  const json = allKeysResult.value.reduce(
+  const json = allKeysResult.value.reduce<JsonObject>(
     (acc, kv) => {
       if (kv.type === 'objectKeyValue') {
         for (const subKey of kv.subs) {
@@ -113,7 +112,7 @@ function parseJsonFromKeys(
             subKey.value,
             options.handlers?.key,
             subKey.path.key0,
-            ...subKey.path.keys
+            ...subKey.path.keys,
           );
         }
       } else if (kv.type === 'arrayKeyValue') {
@@ -123,7 +122,7 @@ function parseJsonFromKeys(
             subKey.value,
             options.handlers?.key,
             subKey.path.key0,
-            ...subKey.path.keys
+            ...subKey.path.keys,
           );
         }
       }
@@ -132,11 +131,11 @@ function parseJsonFromKeys(
         kv.value,
         options.handlers?.key,
         kv.path.key0,
-        ...kv.path.keys
+        ...kv.path.keys,
       );
       return acc;
     },
-    {} as JsonObject
+    {},
   );
   return json;
 }

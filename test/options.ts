@@ -2,7 +2,9 @@ import test from 'ava';
 import deepmerge from 'deepmerge';
 import { stdout } from 'test-console';
 
-import { handleArgs, Options } from '../src/aspargvs';
+import { handleArgs, type Options } from '../src/aspargvs.ts';
+
+export default { require: ['./_force-exit.ts'] };
 
 
 const outputSnapshotMacro = test.macro((t, args: string[], options: Options) => {
@@ -17,15 +19,15 @@ const kebabToSnakeCase = (str: string) => str.replace(/-/g, '_');
 const snakeToKebabCase = (str: string) => str.replace(/_/g, '-');
 
 
-test('throw when key is separate from value', t => {
+test('throw when key is separate from value', (t) => {
   t.throws(
     () => {
       handleArgs(
         ['--foo', 'bar'],
-        { handlers: { json: () => { t.fail('This code must not be reached in this test.'); } } }
+        { handlers: { json: () => { t.fail('This code must not be reached in this test.'); } } },
       );
     },
-    { message: 'Some args can not be parsed: bar' }
+    { message: 'Some args can not be parsed: bar' },
   );
 });
 
@@ -37,8 +39,8 @@ test(
   { handlers: {
     key: kebabToSnakeCase,
     inspect: {},
-    json: () => { console.log('This code must not be reached in this test.'); }
-  } }
+    json: () => { console.log('This code must not be reached in this test.'); },
+  } },
 );
 
 test(
@@ -48,8 +50,8 @@ test(
   { handlers: {
     unkey: kebabToSnakeCase,
     unparse: true,
-    json: () => { console.log('This code must not be reached in this test.'); }
-  } }
+    json: () => { console.log('This code must not be reached in this test.'); },
+  } },
 );
 
 test(
@@ -60,8 +62,8 @@ test(
     key: kebabToSnakeCase,
     unkey: snakeToKebabCase,
     unparse: true,
-    json: () => { console.log('This code must not be reached in this test.'); }
-  } }
+    json: () => { console.log('This code must not be reached in this test.'); },
+  } },
 );
 
 
@@ -69,6 +71,16 @@ test(
   'custom merge',
   outputSnapshotMacro,
   ['json', './test/files/sample1.json', 'preset', 'foo', '--d[]', 'baz'],
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-assignment
-  { handlers: { json: (json) => JSON.stringify(json), merge: (acc, next) => deepmerge(acc, next, { arrayMerge: (destinationArray, sourceArray) => [...sourceArray, ...destinationArray] }) }, presets: { foo: { description: 'Foo', json: { c: [3,4,5], d: ['bar'] } } } }
+  {
+    handlers: {
+      json: json => JSON.stringify(json),
+      merge: (acc, next) => deepmerge(
+        acc,
+        next,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-assignment
+        { arrayMerge: (destinationArray, sourceArray) => [...sourceArray, ...destinationArray] },
+      ),
+    },
+    presets: { foo: { description: 'Foo', json: { c: [3, 4, 5], d: ['bar'] } } },
+  },
 );

@@ -25,9 +25,9 @@ export function getType (value: JsonValue):
     case 'string':
       return 'string';
     case 'object':
-      return (value === null) ? 'null' :
-        (isJsonArray(value)) ? 'array' :
-          'object';
+      return (value === null) ? 'null'
+        : (isJsonArray(value)) ? 'array'
+          : 'object';
     default:
       throw new Error(`Expected valid JsonValue, got ${typeof value}`);
   }
@@ -70,7 +70,7 @@ export function setJsonObjectItem (
         (obj[key0] as JsonValue[]).push(...value);
       } else {
         throw new Error(
-          `Trying to set "${key0}" key multiple times.`
+          `Trying to set "${key0}" key multiple times.`,
         );
       }
     } else {
@@ -98,7 +98,7 @@ function setNested (
     setJsonObjectItem(nested, value, keyTransform, key1, ...keys);
   } else {
     throw new Error(
-      `Trying to access ${typeof key1} key ${JSON.stringify(key1)} of an ${getType(nested)}.`
+      `Trying to access ${typeof key1} key ${JSON.stringify(key1)} of an ${getType(nested)}.`,
     );
   }
 }

@@ -9,12 +9,12 @@ import { handleArgv } from '../lib/aspargvs.mjs';
 // });
 
 // https://gist.github.com/nblackburn/875e6ff75bc8ce171c758bf75f304707#gistcomment-3677597
-const camelToKebabCase = (str) => str
+const camelToKebabCase = str => str
   .replace(/\B([A-Z])(?=[a-z])/g, '-$1')
   .replace(/\B([a-z0-9])([A-Z])/g, '$1-$2')
   .toLowerCase();
 
-const kebabToCamelCase = (str) => str.replace(/-./g, x=>x[1].toUpperCase());
+const kebabToCamelCase = str => str.replace(/-./g, x => x[1].toUpperCase());
 
 handleArgv({
   handlers: {
@@ -33,10 +33,10 @@ handleArgv({
       description: 'The Foo',
       json: {
         foo: 'foo',
-        barArray: [ 'bar', [] ]
-      }
-    }
-  }
+        barArray: ['bar', []],
+      },
+    },
+  },
 });
 
 function businessLogic (optionsObject) {

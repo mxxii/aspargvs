@@ -1,7 +1,7 @@
 import typescript from '@rollup/plugin-typescript';
 
 export default {
-  external: ['deepmerge', 'peberminta', 'peberminta/char', 'fs', 'util'],
+  external: ['deepmerge', 'peberminta', 'peberminta/char', 'node:fs', 'node:util'],
   input: 'src/aspargvs.ts',
   plugins: [typescript()],
   output: [

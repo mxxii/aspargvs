@@ -1,6 +1,8 @@
 import test from 'ava';
 
-import { argToToken } from '../src/key-token-parser';
+import { argToToken } from '../src/key-token-parser.ts';
+
+export default { require: ['./_force-exit.ts'] };
 
 
 const snapshotMacro = test.macro((t, input: string) => {
