@@ -27,7 +27,7 @@ export function getHelp (options: Options): string {
       [''],
       ['Presets are:'],
       ...presets,
-    ] : []) as ([string, boolean?])[],
+    ] : []) satisfies ([string, boolean?])[],
     [''],
     ['Key syntax:'],
     ['  --foo                     : True value'],

@@ -22,7 +22,21 @@ test('escape a dot (not a nested key)', snapshotMacro, '--foo\\.bar=1');
 
 test('escape the equals sign (not a key-value)', snapshotMacro, '--foo\\=1');
 
-test('escape the exclamation mark (not a negation)', snapshotMacro, '--\\!foo');
+test('first exclamation mark is a negation when unescaped', snapshotMacro, '--!!!foo');
+
+test('escape the first exclamation mark (not a negation)', snapshotMacro, '--\\!!!foo');
+
+test('escape multiple exclamation marks (not a negation)', snapshotMacro, '--\\!!\\!foo');
+
+test('dashes in a depth 0 key (no need to escape)', snapshotMacro, '----foo');
+
+test('dashes in higher depth key (no need to escape)', snapshotMacro, '::--foo');
+
+test('colons in a depth 0 key (no need to escape)', snapshotMacro, '--::foo');
+
+test('escape first colon in higher depth key', snapshotMacro, '::\\::foo');
+
+test('escape multiple colons in higher depth key', snapshotMacro, ':\\::\\:foo');
 
 
 // Value arrays

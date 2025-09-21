@@ -52,6 +52,27 @@ test('nested array with negation ArgToken', snapshotMacro, '--!foo.[1][2]');
 
 test('empty string key with negation ArgToken', snapshotMacro, '--!');
 
+test('throw when negation is combined with value', (t) => {
+  t.throws(
+    () => { argToToken('--!foo=bar'); },
+    { message: 'Failed to parse the argument "--!foo=bar".' },
+  );
+});
+
+test('throw when negation is combined with array key', (t) => {
+  t.throws(
+    () => { argToToken('--!foo[]'); },
+    { message: 'Failed to parse the argument "--!foo[]".' },
+  );
+});
+
+test('throw when negation is combined with object key', (t) => {
+  t.throws(
+    () => { argToToken('--!foo{}'); },
+    { message: 'Failed to parse the argument "--!foo{}".' },
+  );
+});
+
 
 // Subkey ArgToken
 
@@ -59,8 +80,14 @@ test('bare subkey ArgToken', snapshotMacro, ':foo');
 
 test('empty string subkey ArgToken', snapshotMacro, ':');
 
+test('subkey of empty string subkey ArgToken', snapshotMacro, ':.foo');
+
 test('nested array with negation subkey ArgToken', snapshotMacro, ':![1].foo.[2]');
 
 test('nested array with auto index subkey ArgToken', snapshotMacro, ':[_][_].[_][]');
 
 test('array index in empty string subkey ArgToken', snapshotMacro, ':.[1]');
+
+test('depth 2 subkey ArgToken', snapshotMacro, '::foo');
+
+test('higher depth subkey ArgToken', snapshotMacro, '::::::::::::::foo');

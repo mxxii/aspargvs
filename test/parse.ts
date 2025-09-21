@@ -75,6 +75,42 @@ test('throw when providing subkeys for a primitive value', (t) => {
 });
 
 
+// Nested subkeys
+
+test('nested object subkeys', snapshotMacro, ['--foo{}', ':bar{}', '::baz{}', ':::qux', '::baz2', ':bar2{}']);
+
+test('nested array subkeys', snapshotMacro, ['--foo=[a]', ':[1]=[bar]', '::[_][]', ':::[_]', '::[_]', ':[2]=b']);
+
+test('mixed nested subkeys', snapshotMacro, ['--foo{}', ':bar[]', '::[_]{}', ':::baz']);
+
+test('mixed nested subkeys 2', snapshotMacro, ['--foo[]', ':[_]={}', '::bar[]', ':::[_]=baz']);
+
+test('nested subkeys in bare values array', snapshotMacro, ['--foo[]', '{}', ':a{}', '::b=[3,4]', ':c', '[5]', ':[_][]', '::![_]', 'd']);
+
+test('nested subkeys in bare values array 2', snapshotMacro, ['--foo{}', ':bar[]', '{}', '::a{}', ':::b=[3,4]', '::c', '[5]', '::[_][]', ':::![_]', 'd']);
+
+test('throw when subkey of wrong depth is used', (t) => {
+  t.throws(
+    () => { handleArgs(['--foo{}', '::bar']); },
+    { message: 'Some args can not be parsed: ::bar' },
+  );
+});
+
+test('throw when subkey of wrong depth is used 2', (t) => {
+  t.throws(
+    () => { handleArgs(['--foo[]', '::[0]']); },
+    { message: 'Some args can not be parsed: ::[0]' },
+  );
+});
+
+test('throw when subkey of wrong depth is used 3', (t) => {
+  t.throws(
+    () => { handleArgs(['--foo[]', '{}', '::bar']); },
+    { message: 'Some args can not be parsed: ::bar' },
+  );
+});
+
+
 // Automatic index
 
 test('object subkeys inside auto-indexed array', snapshotMacro, ['--foo[_]{}', ':bar=1', '--foo[_]={}', ':bar=2', ':baz=3']);

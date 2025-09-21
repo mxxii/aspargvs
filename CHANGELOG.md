@@ -2,7 +2,9 @@
 
 ## Version 0.7.0
 
-- Targeting Node 20;
+- targeting Node 20;
+- recursive subkeys (`::`, `:::`, etc.) are supported now;
+- some changes to escaping rules for keys containing `!` and `:`;
 - ...
 
 ## Version 0.6.0

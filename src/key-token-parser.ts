@@ -1,3 +1,6 @@
+// This file is responsible for parsing individual argument strings
+// into tokens for the second stage parser (keys-parser.ts).
+
 
 import * as p from 'peberminta';
 import * as pc from 'peberminta/char';
@@ -6,6 +9,7 @@ import * as pc from 'peberminta/char';
 export type ObjectPath = { key0: string; keys: (string | number)[] };
 export type ArrayPath  = { key0: number; keys: (string | number)[] };
 export type Path = ObjectPath | ArrayPath;
+
 export type ArgValue = null | true | false | number | string | Record<string, never> | ArgValue[];
 
 export type KeyValuePair = { type: 'keyValue'; value: ArgValue };
@@ -15,36 +19,22 @@ export type ArrayKey     = { type: 'arrayKey' };
 export type ObjectKey    = { type: 'objectKey' };
 export type KeyData = KeyValuePair | BareKey | Negation | ArrayKey | ObjectKey;
 
-export type ArraySubKey  = { type: 'subKey'; data: KeyData; path: ArrayPath };
-export type ObjectSubKey = { type: 'subKey'; data: KeyData; path: ObjectPath };
-export type SubKey = ObjectSubKey | ArraySubKey;
+export type KeyTokenOfObject = { type: 'keyToken'; depth: number; path: ObjectPath; data: KeyData };
+export type KeyTokenOfArray = { type: 'keyToken'; depth: number; path: ArrayPath; data: KeyData };
+export type KeyToken = { type: 'keyToken'; depth: number; path: Path; data: KeyData };
 
-export type FullKey     = { type: 'fullKey'; data: KeyData; path: ObjectPath };
-export type KeyedArgToken = FullKey | SubKey;
-
-export type BareValue = { type: 'bareValue'; value: ArgValue };
-export type ArgToken = KeyedArgToken | BareValue;
+export type BareValueToken = { type: 'bareValue'; value: ArgValue };
+export type ArgToken = KeyToken | BareValueToken;
 
 type Options = { arg: string };
 
-export function isObjectPath (path: Path): path is ObjectPath {
-  return typeof path.key0 === 'string';
+
+export function isKeyTokenOfObject (token: ArgToken): token is KeyTokenOfObject {
+  return token.type === 'keyToken' && typeof token.path.key0 === 'string';
 }
 
-export function isArrayPath (path: Path): path is ArrayPath {
-  return typeof path.key0 === 'number';
-}
-
-export function isObjectSubKey (subKey: SubKey): subKey is ObjectSubKey {
-  return isObjectPath(subKey.path);
-}
-
-export function isArraySubKey (subKey: SubKey): subKey is ArraySubKey {
-  return isArrayPath(subKey.path);
-}
-
-export function isKeyedArgToken (token: ArgToken): token is KeyedArgToken {
-  return token.type === 'fullKey' || token.type === 'subKey';
+export function isKeyTokenOfArray (token: ArgToken): token is KeyTokenOfArray {
+  return token.type === 'keyToken' && typeof token.path.key0 === 'number';
 }
 
 
@@ -58,16 +48,21 @@ function unescapeString (chars: string[]) {
 
 
 function escapedChar (
-  specialChars: string,
+  mustEscapeChars: Set<string>,
+  canEscapeChars: Set<string> = new Set(),
 ): p.Parser<string, Options, string> {
-  if (!specialChars.includes('\\')) {
-    specialChars += '\\';
+  mustEscapeChars.add('\\');
+  for (const char of mustEscapeChars) {
+    canEscapeChars.delete(char);
   }
-  const escapes = [...specialChars]
-    .map(c => p.map(pc.str('\\' + c), () => c));
+  const mustEscapes = [...mustEscapeChars]
+    .map(c => p.right(pc.char('\\'), pc.char(c)));
+  const canEscapes = [...canEscapeChars]
+    .map(c => p.right(pc.char('\\'), pc.char(c)));
   return p.choice(
-    ...escapes,
-    pc.noneOf(specialChars),
+    ...mustEscapes,
+    ...canEscapes,
+    pc.noneOf([...mustEscapeChars]),
   );
 }
 
@@ -82,7 +77,7 @@ function quotedString (
 ): p.Parser<string, Options, string> {
   return p.middle(
     pc.char(quoteChar),
-    stringOfChars(escapedChar(quoteChar)),
+    stringOfChars(escapedChar(new Set([quoteChar]))),
     pc.char(quoteChar),
   );
 }
@@ -91,8 +86,8 @@ const btString_ = quotedString('`');
 const sqString_ = quotedString("'");
 const dqString_ = quotedString('"');
 
-const pathKey_        = stringOfChars(escapedChar('!.=[{'));
-const arrayString_    = stringOfChars(escapedChar(',]'));
+const pathKey_        = stringOfChars(escapedChar(new Set('.=[{'), new Set('!:')));
+const arrayString_    = stringOfChars(escapedChar(new Set(',]')));
 const unquotedString_ = stringOfChars(p.any);
 
 const nullValue_   = p.map(pc.str('null'),  () => null);
@@ -106,15 +101,8 @@ const jsonFloat_ = p.map(
   pc.concat(
     p.option(pc.char('-'), ''),
     digits_,
-    p.option(pc.concat(
-      pc.char('.'),
-      digits_,
-    ), ''),
-    p.option(pc.concat(
-      pc.oneOf('eE'),
-      p.option(pc.oneOf('+-'), ''),
-      digits_,
-    ), ''),
+    p.option(pc.concat(pc.char('.'), digits_), ''),
+    p.option(pc.concat(pc.oneOf('eE'), p.option(pc.oneOf('+-'), ''), digits_), ''),
   ),
   parseFloat,
 );
@@ -134,16 +122,12 @@ const primitiveValue_: p.Parser<string, Options, ArgValue> = p.choice(
 
 const array_ = p.choice<string, Options, ArgValue[]>(
   p.ab(
-    pc.char('['),
-    pc.char(']'),
+    pc.char('['), pc.char(']'),
     () => [],
   ),
   p.middle(
     pc.char('['),
-    p.sepBy1(
-      p.recursive(() => arrayValue_),
-      pc.char(','),
-    ),
+    p.sepBy1(p.recursive(() => arrayValue_), pc.char(',')),
     pc.char(']'),
   ),
 );
@@ -157,7 +141,7 @@ const arrayValue_: p.Parser<string, Options, ArgValue> = p.choice(
   arrayString_,
 );
 
-const bareValue_ = p.otherwise(
+const bareValue_ = p.eitherOr(
   p.choice(
     primitiveValue_,
     array_,
@@ -178,25 +162,17 @@ const pathIndex_ = p.middle(
 );
 
 const pathItem_: p.Parser<string, Options, string | number> = p.eitherOr(
-  p.right(
-    p.option(pc.char('.'), ''),
-    pathIndex_,
-  ),
-  p.right(
-    pc.char('.'),
-    pathKey_,
-  ),
+  p.right(p.option(pc.char('.'), ''), pathIndex_),
+  p.right(pc.char('.'),               pathKey_),
 );
 
 const objectPath_: p.Parser<string, Options, ObjectPath> = p.ab(
-  pathKey_,
-  p.many(pathItem_),
+  pathKey_, p.many(pathItem_),
   (head, tail) => ({ key0: head, keys: tail }),
 );
 
 const arrayPath_: p.Parser<string, Options, ArrayPath> = p.ab(
-  pathIndex_,
-  p.many(pathItem_),
+  pathIndex_, p.many(pathItem_),
   (head, tail) => ({ key0: head, keys: tail }),
 );
 
@@ -205,25 +181,29 @@ const path_: p.Parser<string, Options, Path> = p.eitherOr(
   objectPath_,
 );
 
-const bareValueToken_: p.Matcher<string, Options, BareValue> = p.map(
+const bareValueToken_: p.Matcher<string, Options, BareValueToken> = p.map(
   bareValue_,
   v => ({ type: 'bareValue', value: v }),
 );
 
-const keyToken_: p.Parser<string, Options, KeyedArgToken> = p.chain(
+const keyToken_: p.Parser<string, Options, KeyToken> = p.chain(
   p.eitherOr(
-    p.map(p.discard(pc.char('-'), pc.char('-')), () => false),
-    p.map(p.discard(pc.char(':')), () => true),
+    p.map(p.discard(pc.char('-'), pc.char('-')), () => 0),
+    p.map(p.many1(pc.char(':')), colons => colons.length),
   ),
-  (isSubkey) => {
-    const pPath = (isSubkey) ? path_ : objectPath_;
-    return p.choice(
+  (depth) => {
+    const pPath = (depth > 0) ? path_ : objectPath_;
+    return p.choice<string, Options, KeyToken>(
       p.abc(
         pc.char('!'),
         pPath,
-        p.end,
+        p.eitherOr(
+          p.end,
+          p.error(data => `Failed to parse the argument "${data.options.arg}".`),
+        ),
         (_, path) => ({
-          type: isSubkey ? 'subKey' : 'fullKey',
+          type: 'keyToken',
+          depth: depth,
           path: path,
           data: { type: 'negation' },
         }),
@@ -236,7 +216,8 @@ const keyToken_: p.Parser<string, Options, KeyedArgToken> = p.chain(
           p.map(p.discard(pc.char('{'), pc.char('}'), p.end), () => 'objectKey' as const),
         ),
         (path, type) => ({
-          type: isSubkey ? 'subKey' : 'fullKey',
+          type: 'keyToken',
+          depth: depth,
           path: path,
           data: { type: type },
         }),
@@ -246,13 +227,14 @@ const keyToken_: p.Parser<string, Options, KeyedArgToken> = p.chain(
         p.right(pc.char('='), bareValue_),
         p.end,
         (path, value) => ({
-          type: isSubkey ? 'subKey' : 'fullKey',
+          type: 'keyToken',
+          depth: depth,
           path: path,
-          data: { type: 'keyValue', value: value } as KeyData,
+          data: { type: 'keyValue', value: value },
         }),
       ),
       p.error(data => `Failed to parse the argument "${data.options.arg}".`),
-    ) as p.Parser<string, Options, KeyedArgToken>;
+    );
   },
 );
 

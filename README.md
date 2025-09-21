@@ -117,14 +117,15 @@ Note: short aliases cannot be merged.
 
 ### Key syntax
 
-| Syntax                       | Interpretation
-| ---------------------------- | --------------
-| `--<path>`                   | Bare key, assigned a `true` value
-| `--!<path>`                  | Negation, assigned a `false` value
-| `--<path>=<value>`           | Key with a value (see next table)
-| `--<path>[] <value> <value>` | Array key followed by bare values (see next table)
-| `--<path>{}`                 | Empty object (use subkeys or full paths to fill a non-empty object)
-| `:<path>`                    | Subkey (all above is the same except `:` prefix, but the path is nested in the last defined object or array that is not in a subkey. Subkeys recursion is not allowed.)
+| Syntax                       | Interpretation                                                                                                                     |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `--<path>`                   | Bare key of depth 0, assigned a `true` value                                                                                       |
+| `--!<path>`                  | Negation, assigned a `false` value                                                                                                 |
+| `--<path>=<value>`           | Key with a value (see next table)                                                                                                  |
+| `--<path>[] <value> <value>` | Array key followed by bare values (see next table). Bare values have the same depth as the array key                               |
+| `--<path>{}`                 | Empty object (use subkeys or full paths to fill a non-empty object)                                                                |
+| `:<path>`                    | Subkey of depth 1 (all above is the same except `:` prefix, but the path is nested in the last defined object or array of depth 0) |
+| `::<path>`                   | Recursive subkeys of any depth are supported                                                                                       |
 
 
 ### Value syntax
@@ -145,18 +146,19 @@ Note: short aliases cannot be merged.
 
 ### Some examples
 
-| Syntax                              | Interpretation                               |
-| ----------------------------------- | -------------------------------------------- |
-| `--foo.bar=1 --foo.baz=2 --foo.qux` | `{ foo: { bar: 1, baz: 2, qux: true } }`     |
-| `--foo{} :bar=1 :baz=2 :qux`        | `{ foo: { bar: 1, baz: 2, qux: true } }`     |
-| `--foo.bar{} :baz.qux[_]=null`      | `{ foo: { bar: { baz: { qux: [null] } } } }` |
-| `--foo[0]=1 --foo[1]=2 --!foo[2]`   | `{ foo: [ 1, 2, false ] }`                   |
-| `--foo[] 1 2 false`                 | `{ foo: [ 1, 2, false ] }`                   |
-| `--foo[] :[_]=1 :[_]=2 :![_]`       | `{ foo: [ 1, 2, false ] }`                   |
-| `--foo=[true] :![1] :[_][] :[_]{}`  | `{ foo: [ true, false, [], {} ] }`           |
-| `--foo={} :bar{} :!baz`             | `{ foo: { bar: {}, baz: false } }`           |
-| `--foo[] {} :bar {} :!baz`          | `{ foo: [ { bar: true }, { baz: false } ] }` |
-| `--foo[] [0] :[_]=1 [] :[_]=[2,3]`  | `{ foo: [ [0, 1], [[2, 3]] ] }`              |
+| Syntax                                 | Interpretation                               |
+| -------------------------------------- | -------------------------------------------- |
+| `--foo.bar=1 --foo.baz=2 --foo.qux`    | `{ foo: { bar: 1, baz: 2, qux: true } }`     |
+| `--foo{} :bar=1 :baz=2 :qux`           | `{ foo: { bar: 1, baz: 2, qux: true } }`     |
+| `--foo.bar{} :baz.qux[_]=null`         | `{ foo: { bar: { baz: { qux: [null] } } } }` |
+| `--foo{} :bar{} ::baz{} :::qux=[null]` | `{ foo: { bar: { baz: { qux: [null] } } } }` |
+| `--foo[0]=1 --foo[1]=2 --!foo[2]`      | `{ foo: [ 1, 2, false ] }`                   |
+| `--foo[] 1 2 false`                    | `{ foo: [ 1, 2, false ] }`                   |
+| `--foo[] :[_]=1 :[_]=2 :![_]`          | `{ foo: [ 1, 2, false ] }`                   |
+| `--foo=[true] :![1] :[_][] :[_]{}`     | `{ foo: [ true, false, [], {} ] }`           |
+| `--foo={} :bar{} :!baz`                | `{ foo: { bar: {}, baz: false } }`           |
+| `--foo[] {} :bar {} :!baz`             | `{ foo: [ { bar: true }, { baz: false } ] }` |
+| `--foo[] [0] :[_]=1 [] :[_]=[2,3]`     | `{ foo: [ [0, 1], [[2, 3]] ] }`              |
 
 
 ### Escape syntax
@@ -165,17 +167,18 @@ Note: short aliases cannot be merged.
 - Use quoted strings to escape syntax inside values;
 - Escape quote symbol inside quoted string with "`\`".
 
-| Syntax            | Interpretation       |
-| ----------------- | -------------------- |
-| `--foo\[0]=1`     | `{ 'foo[0]': 1 }`    |
-| `--foo\.bar=1`    | `{ 'foo.bar': 1 }`   |
-| `--foo\=1`        | `{ 'foo=1': true }`  |
-| `--\!foo`         | `{ '!foo': true }`   |
-| `--foo=[a\]]`     | `{ foo: [ 'a]' ] }`  |
-| `--foo=[a\,b]`    | `{ foo: [ 'a,b' ] }` |
-| `--foo=['a,b']`   | `{ foo: [ 'a,b' ] }` |
-| `--foo='[a,b]'`   | `{ foo: '[a,b]' }`   |
-| `--foo='true'`    | `{ foo: 'true' }`    |
+| Syntax            | Interpretation               |
+| ----------------- | ---------------------------- |
+| `--foo\[0]=1`     | `{ 'foo[0]': 1 }`            |
+| `--foo\.bar=1`    | `{ 'foo.bar': 1 }`           |
+| `--foo\=1`        | `{ 'foo=1': true }`          |
+| `--\!foo`         | `{ '!foo': true }`           |
+| `--foo=[a\]]`     | `{ foo: [ 'a]' ] }`          |
+| `--foo=[a\,b]`    | `{ foo: [ 'a,b' ] }`         |
+| `--foo=['a,b']`   | `{ foo: [ 'a,b' ] }`         |
+| `--foo='[a,b]'`   | `{ foo: '[a,b]' }`           |
+| `--foo='true'`    | `{ foo: 'true' }`            |
+| `--foo{} :\::bar` | `{ foo: { '::bar': true } }` |
 
 
 ### Shell specifics
@@ -214,7 +217,6 @@ Some things left for future updates:
 - Explore the possibility to support for output object type/schema - to return object of that type and generate detailed help;
 - `unparse` command - provide escaped strings ready for use in different shells;
 - `unparse` command - avoid string quotes when not needed;
-- Recursive subkeys with `::`, `:::`, etc prefixes;
 - Explore the possibility to escape syntax inside values with `\` to reduce the need for quoted strings;
 - ...
 
