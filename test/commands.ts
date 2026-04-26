@@ -4,7 +4,7 @@ import { stdout } from 'test-console';
 
 import { handleArgs, type JsonObject, type Options } from '../src/aspargvs.ts';
 
-export default { require: ['./_force-exit.ts'] };
+export default { require: ['./_force-exit.ts'] as const };
 
 
 const outputSnapshotMacro = test.macro((t, args: string[], options: Options) => {

@@ -128,7 +128,7 @@ Can query it from package.json for example.
 </td>
 <td>
 
-`true` \| (`help`: `string`) => `string` \| `void`
+`true` \| ((`help`: `string`) => `string` \| `void`)
 
 </td>
 <td>
@@ -153,7 +153,7 @@ Otherwise it is considered handled by client code.
 </td>
 <td>
 
- \| `InspectOptions` \| (`json`: [`JsonObject`](#jsonobject)) => `string` \| `void`
+ \| `InspectOptions` \| ((`json`: [`JsonObject`](#jsonobject)) => `string` \| `void`)
 
 </td>
 <td>
@@ -259,7 +259,7 @@ If you need to convert from camelCase to kebab-case for example.
 </td>
 <td>
 
-`true` \| (`args`: `string`[]) => `string` \| `void`
+`true` \| ((`args`: `string`[]) => `string` \| `void`)
 
 </td>
 <td>
@@ -327,7 +327,7 @@ Requires [Options.handlers.merge](#handlers) to work.
 ### handleArgs()
 
 ```ts
-function handleArgs(args: string[], options: Options): void;
+function handleArgs(args: string[], options?: Options): void;
 ```
 
 Parse arguments-only array into JSON object,
@@ -351,7 +351,7 @@ Use [handleArgv](#handleargv) instead in case you don't need any special pre-pro
 ### handleArgv()
 
 ```ts
-function handleArgv(options: Options): void;
+function handleArgv(options?: Options): void;
 ```
 
 Parse `process.argv` into JSON object,

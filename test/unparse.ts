@@ -1,9 +1,9 @@
-import { inspect } from 'util';
+import { inspect } from 'node:util';
 import test from 'ava';
 
 import { unparseArgs, type JsonObject } from '../src/aspargvs.ts';
 
-export default { require: ['./_force-exit.ts'] };
+export default { require: ['./_force-exit.ts'] as const };
 
 
 const snapshotMacro = test.macro((t, json: JsonObject, unkey?: (key: string) => string) => {

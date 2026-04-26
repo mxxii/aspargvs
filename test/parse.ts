@@ -2,7 +2,7 @@ import test from 'ava';
 
 import { handleArgs } from '../src/aspargvs.ts';
 
-export default { require: ['./_force-exit.ts'] };
+export default { require: ['./_force-exit.ts'] as const };
 
 
 const snapshotMacro = test.macro((t, input: string[]) => {

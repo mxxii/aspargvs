@@ -23,8 +23,6 @@ export default defineConfig(
       'lib/**',
       'node_modules/**',
       'package-lock.json',
-      '**/grammar.js',
-      '**/grammar.ts',
     ],
   },
 
@@ -60,12 +58,10 @@ export default defineConfig(
     languageOptions: {
       parserOptions: {
         tsconfigRootDir: import.meta.dirname,
-        projectService: {
-          allowDefaultProject: [
-            'test/*.ts',
-          ],
-          maximumDefaultProjectFileMatchCount_THIS_WILL_SLOW_DOWN_LINTING: 12,
-        },
+        project: [
+          'tsconfig.json',
+          'test/tsconfig.json',
+        ],
         ecmaVersion: 2020,
         sourceType: 'module',
       },
@@ -98,6 +94,7 @@ export default defineConfig(
       '@stylistic/space-before-function-paren': ['error', 'always'],
       'no-var': 'error',
       'no-warning-comments': 'warn',
+      'object-shorthand': ['error', 'consistent'],
       'prefer-const': 'error',
       'tsdoc/syntax': 'error',
     },
