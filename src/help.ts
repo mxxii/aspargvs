@@ -21,8 +21,8 @@ export function getHelp (options: Options): string {
     ['  help,    -h                : Print this message and exit', !!options.handlers?.help],
     ['  inspect, -i                : Pretty print the args object and exit', !!options.handlers?.inspect],
     ['  unparse, -u                : Print the args object back as args string and exit', !!options.handlers?.unparse],
-    ['  json,    -j <file_name>    : Merge given JSON file contents into args object', !!options.handlers?.merge],
-    ['  preset,  -p <preset_name>  : Merge given preset into args object', !!options.handlers?.merge && presets.length > 0],
+    ['  json,    -j <file_name>    : Load contents of given JSON file', !!options.handlers?.merge],
+    ['  preset,  -p <preset_name>  : Load a predefined preset', !!options.handlers?.merge && presets.length > 0],
     ...((presets.length > 0) ? [
       [''],
       ['Presets are:'],

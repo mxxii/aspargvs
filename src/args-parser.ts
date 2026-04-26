@@ -59,7 +59,7 @@ export function handleArgs (args: string[], options: Options = {}): void {
   if (commandResult.value.type === 'commandWithData' && options.handlers?.merge) {
     // In fact, options.handlers.merge is definitely set here,
     // otherwise it would've errored in parseAllCommands call above.
-    json = options.handlers.merge(json, commandResult.value.json);
+    json = options.handlers.merge(commandResult.value.json, json);
   }
 
   if (commandResult.value.command === 'inspect' && options.handlers?.inspect) {

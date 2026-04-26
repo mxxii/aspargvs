@@ -92,14 +92,16 @@ Commands are only available when required conditions are met (this means specifi
 
 | Command   | Alias | Argument       | Description
 | --------- | ----- | -------------- | -----------
-| `json`    | `-j`  | \<file_name>   | Merge given file contents with the parsed args object.
-| `preset`  | `-p`  | \<preset_name> | Merge given preset into the parsed args object.
+| `json`    | `-j`  | \<file_name>   | Load contents of given JSON file.
+| `preset`  | `-p`  | \<preset_name> | Load a predefined preset.
 | `inspect` | `-i`  |                | Pretty print the parsed args object. Useful as a dry run to check how arguments are parsed.
 | `unparse` | `-u`  |                | Print the parsed args object back as args string. Can be used to check what arguments produce the result equivalent to a given json file. Albeit it's pretty dumb at this point and can't use subkeys for example.
-| `help`    | `-h`  |                | Print help message.
+| `help`    | `-h`  |                | Print help message. (Also lists available presets, if any.)
 | `version` | `-v`  |                | Print version number.
 
-Note: short aliases cannot be merged.
+Note: JSON files and presets are composed in the order they are provided. Explicit command line arguments are applied last and override values from files and presets. (This was different in versions prior to 0.7.0.)
+
+Note: short aliases cannot be merged and must be provided separately.
 
 
 ### Path syntax
@@ -117,15 +119,15 @@ Note: short aliases cannot be merged.
 
 ### Key syntax
 
-| Syntax                       | Interpretation                                                                                                                     |
-| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `--<path>`                   | Bare key of depth 0, assigned a `true` value                                                                                       |
-| `--!<path>`                  | Negation, assigned a `false` value                                                                                                 |
-| `--<path>=<value>`           | Key with a value (see next table)                                                                                                  |
-| `--<path>[] <value> <value>` | Array key followed by bare values (see next table). Bare values have the same depth as the array key                               |
-| `--<path>{}`                 | Empty object (use subkeys or full paths to fill a non-empty object)                                                                |
-| `:<path>`                    | Subkey of depth 1 (all above is the same except `:` prefix, but the path is nested in the last defined object or array of depth 0) |
-| `::<path>`                   | Recursive subkeys of any depth are supported                                                                                       |
+| Syntax                       | Interpretation
+| ---------------------------- | --------------
+| `--<path>`                   | Bare key of depth 0, assigned a `true` value
+| `--!<path>`                  | Negation, assigned a `false` value
+| `--<path>=<value>`           | Key with a value (see next table)
+| `--<path>[] <value> <value>` | Array key followed by bare values (see next table). Bare values have the same depth as the array key
+| `--<path>{}`                 | Empty object (use subkeys or full paths to fill a non-empty object)
+| `:<path>`                    | Subkey of depth 1 (all above is the same except `:` prefix, but the path is nested in the last defined object or array of depth 0)
+| `::<path>`                   | Recursive subkeys of any depth are supported (starting from version 0.7.0)
 
 
 ### Value syntax
