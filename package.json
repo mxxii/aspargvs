@@ -20,13 +20,22 @@
   "funding": "https://ko-fi.com/killymxi",
   "license": "MIT",
   "exports": {
-    "import": "./lib/aspargvs.mjs",
-    "require": "./lib/aspargvs.cjs"
+    ".": {
+      "import": {
+        "types": "./lib/aspargvs.d.mts",
+        "default": "./lib/aspargvs.mjs"
+      },
+      "require": {
+        "types": "./lib/aspargvs.d.cts",
+        "default": "./lib/aspargvs.cjs"
+      }
+    },
+    "./package.json": "./package.json"
   },
   "type": "module",
   "main": "./lib/aspargvs.cjs",
   "module": "./lib/aspargvs.mjs",
-  "types": "./lib/aspargvs.d.ts",
+  "types": "./lib/aspargvs.d.cts",
   "files": [
     "lib"
   ],

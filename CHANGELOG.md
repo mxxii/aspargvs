@@ -8,7 +8,8 @@
   - JSON files and presets are composed in the order they are provided (as before);
   - explicit command line arguments are applied last and can override values from files and presets (new behavior);
 - some changes to escaping rules for keys containing `!` and `:`;
-- ...
+- adjusted `package.json` exports;
+- `*.d.ts` files are bundled by `rollup` now.
 
 ## Version 0.6.0
 
