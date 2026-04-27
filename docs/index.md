@@ -1,8 +1,8 @@
-**aspargvs v0.6.0**
+**aspargvs v0.7.0**
 
 ***
 
-# aspargvs v0.6.0
+# aspargvs v0.7.0
 
 ## Type Aliases
 

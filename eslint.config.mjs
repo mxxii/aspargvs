@@ -18,7 +18,6 @@ export default defineConfig(
   }),
   {
     ignores: [
-      '.tsimp/**',
       '.vscode/**',
       'lib/**',
       'node_modules/**',
